@@ -1,0 +1,165 @@
+import 'package:flutter/material.dart';
+import '../../domain/models/person.dart';
+import '../../view_models/app_settings_view_model.dart';
+import '../core/person_avatar_chip.dart';
+
+class ManagePeopleDialog extends StatefulWidget {
+  final AppSettingsViewModel settingsViewModel;
+
+  const ManagePeopleDialog({super.key, required this.settingsViewModel});
+
+  @override
+  State<ManagePeopleDialog> createState() => _ManagePeopleDialogState();
+}
+
+class _ManagePeopleDialogState extends State<ManagePeopleDialog> {
+  final _nameController = TextEditingController();
+  int _selectedColorHex = 0xFF006C4C;
+
+  static const List<int> _palette = [
+    0xFF006C4C, // Emerald
+    0xFF0277BD, // Blue
+    0xFFC2185B, // Rose
+    0xFF7B1FA2, // Purple
+    0xFFE65100, // Orange
+    0xFF00838F, // Cyan
+    0xFF4E342E, // Brown
+    0xFF37474F, // Slate
+  ];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _addPerson() {
+    final text = _nameController.text.trim();
+    if (text.isNotEmpty) {
+      widget.settingsViewModel.addPerson(text, _selectedColorHex);
+      _nameController.clear();
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final people = widget.settingsViewModel.people;
+
+    return AlertDialog(
+      title: const Text('Manage People & Household'),
+      content: SizedBox(
+        width: 440,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Add people to track individual shares on budget items and lines.',
+              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 16),
+
+            // Input to add new person
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _nameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Add Person Name',
+                      hintText: 'e.g. Alex, Sam',
+                      prefixIcon: Icon(Icons.person_add_alt_rounded),
+                    ),
+                    onSubmitted: (_) => _addPerson(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: _addPerson,
+                  child: const Text('Add'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Color choice for new person
+            Row(
+              children: [
+                Text(
+                  'Color: ',
+                  style: theme.textTheme.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                ),
+                for (final c in _palette)
+                  GestureDetector(
+                    onTap: () => setState(() => _selectedColorHex = c),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: Color(c),
+                        shape: BoxShape.circle,
+                        border: _selectedColorHex == c
+                            ? Border.all(color: colorScheme.onSurface, width: 2.2)
+                            : null,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 8),
+
+            // Existing People List
+            if (people.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: Text(
+                    'No people added yet.',
+                    style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.outline),
+                  ),
+                ),
+              )
+            else
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: people.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final p = people[index];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      leading: PersonAvatarChip(person: p, showName: false, size: 28),
+                      title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline_rounded, size: 20, color: Colors.red),
+                        onPressed: () {
+                          widget.settingsViewModel.deletePerson(p.id);
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Done'),
+        ),
+      ],
+    );
+  }
+}

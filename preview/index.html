@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Just Budget — Running Material 3 Budget</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Google+Sans+Text:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
+  <style>
+    :root {
+      /* Material 3 Emerald Theme Variables (Light Mode Default) */
+      --md-sys-color-primary: #006C4C;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-primary-container: #8EF7C7;
+      --md-sys-color-on-primary-container: #002114;
+      --md-sys-color-secondary: #4D6356;
+      --md-sys-color-secondary-container: #D0E8D7;
+      --md-sys-color-on-secondary-container: #0B1F15;
+      --md-sys-color-surface: #F6FBF5;
+      --md-sys-color-on-surface: #171D1A;
+      --md-sys-color-surface-variant: #DBE5DE;
+      --md-sys-color-on-surface-variant: #404944;
+      --md-sys-color-outline: #707973;
+      --md-sys-color-outline-variant: #BFC9C2;
+      --md-sys-color-surface-container: #EAEFEA;
+      --md-sys-color-surface-container-high: #E4E9E4;
+      --md-sys-color-surface-container-highest: #DEE4DF;
+      --md-sys-color-surface-container-low: #F0F5F0;
+      --md-sys-color-surface-container-lowest: #FFFFFF;
+      --md-sys-color-error: #BA1A1A;
+      --md-sys-color-error-container: #FFDAD6;
+      
+      /* 4 Financial Activity Pillar Colors */
+      --activity-income: #1B6B38;
+      --activity-income-bg: rgba(27, 107, 56, 0.12);
+      --activity-expense: #BA1A1A;
+      --activity-expense-bg: rgba(186, 26, 26, 0.12);
+      --activity-saving: #0277BD;
+      --activity-saving-bg: rgba(2, 119, 189, 0.12);
+      --activity-investing: #6A1B9A;
+      --activity-investing-bg: rgba(106, 27, 154, 0.12);
+
+      --page-bg: #E8ECE9;
+      --shadow-elevation: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    [data-theme="dark"] {
+      --md-sys-color-primary: #72DAAC;
+      --md-sys-color-on-primary: #003825;
+      --md-sys-color-primary-container: #005238;
+      --md-sys-color-on-primary-container: #8EF7C7;
+      --md-sys-color-secondary: #B4CCBC;
+      --md-sys-color-secondary-container: #364B3F;
+      --md-sys-color-on-secondary-container: #D0E8D7;
+      --md-sys-color-surface: #0F1512;
+      --md-sys-color-on-surface: #DEE4DF;
+      --md-sys-color-surface-variant: #404944;
+      --md-sys-color-on-surface-variant: #BFC9C2;
+      --md-sys-color-outline: #8A938C;
+      --md-sys-color-outline-variant: #404944;
+      --md-sys-color-surface-container: #1B211E;
+      --md-sys-color-surface-container-high: #252C28;
+      --md-sys-color-surface-container-highest: #303733;
+      --md-sys-color-surface-container-low: #171D1A;
+      --md-sys-color-surface-container-lowest: #0A0F0D;
+      --md-sys-color-error: #FFB4AB;
+      --md-sys-color-error-container: #93000A;
+
+      --activity-income: #81C784;
+      --activity-income-bg: rgba(129, 199, 132, 0.18);
+      --activity-expense: #E57373;
+      --activity-expense-bg: rgba(229, 115, 115, 0.18);
+      --activity-saving: #4FC3F7;
+      --activity-saving-bg: rgba(79, 195, 247, 0.18);
+      --activity-investing: #BA68C8;
+      --activity-investing-bg: rgba(186, 104, 200, 0.18);
+
+      --page-bg: #070A09;
+      --shadow-elevation: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Google Sans Text', 'Roboto', -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--page-bg);
+      color: var(--md-sys-color-on-surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+      transition: background 0.3s ease;
+    }
+
+    /* Top Preview Control Bar */
+    .preview-header {
+      width: 100%;
+      max-width: 1020px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding: 10px 16px;
+      background: var(--md-sys-color-surface-container);
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .preview-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .preview-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-toggle {
+      background: var(--md-sys-color-surface-container-high);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .btn-toggle:hover {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    /* Viewport Container (Adaptive: Mobile Phone vs Desktop Layout) */
+    .app-viewport {
+      width: 100%;
+      max-width: 412px;
+      height: 870px;
+      background: var(--md-sys-color-surface);
+      border-radius: 40px;
+      box-shadow: var(--shadow-elevation), 0 0 0 8px rgba(0,0,0,0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .app-viewport.desktop-mode {
+      max-width: 1000px;
+      height: 820px;
+      border-radius: 24px;
+    }
+
+    /* Status Bar for mobile simulation */
+    .status-bar {
+      height: 38px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface-variant);
+      flex-shrink: 0;
+    }
+
+    /* Desktop Navigation Rail */
+    .desktop-layout-wrapper {
+      display: flex;
+      flex: 1;
+      height: calc(100% - 38px);
+      overflow: hidden;
+    }
+
+    .nav-rail {
+      width: 80px;
+      background: var(--md-sys-color-surface-container);
+      border-right: 1px solid var(--md-sys-color-outline-variant);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .app-viewport.desktop-mode .nav-rail {
+      display: flex;
+    }
+
+    .nav-rail-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--md-sys-color-on-surface-variant);
+      text-decoration: none;
+    }
+    .nav-rail-pill {
+      width: 56px;
+      height: 32px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-rail-item.active .nav-rail-pill {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+    .nav-rail-item.active {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    /* Screen Content Scroll Area */
+    .screen-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 90px;
+      position: relative;
+    }
+    .app-viewport.desktop-mode .screen-content {
+      padding-bottom: 24px;
+    }
+
+    /* App Bar */
+    .top-app-bar {
+      padding: 12px 20px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .app-brand {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    /* Cashflow Hero Card */
+    .hero-card {
+      margin: 8px 16px 12px;
+      padding: 20px;
+      background: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 24px;
+    }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--md-sys-color-on-surface-variant);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .hero-amount-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .hero-net-amount {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .hero-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .badge-surplus {
+      background: rgba(27, 107, 56, 0.16);
+      color: var(--activity-income);
+    }
+    .badge-deficit {
+      background: rgba(186, 26, 26, 0.16);
+      color: var(--activity-expense);
+    }
+
+    /* Mini Pillars Row */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      padding-top: 14px;
+    }
+    .pillar-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .pillar-col-header {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pillar-col-val {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    /* Person Filter Chips Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 16px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .m3-chip {
+      padding: 6px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-low);
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .m3-chip.active {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Section Header */
+    .section-label {
+      padding: 10px 20px 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--md-sys-color-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .count-pill {
+      background: var(--md-sys-color-surface-container-highest);
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+
+    /* Card Containers */
+    .m3-card {
+      margin: 6px 16px 10px;
+      background: var(--md-sys-color-surface-container-lowest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    /* Direct Item Tile */
+    .item-tile {
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border-bottom: 1px solid var(--md-sys-color-surface-container-high);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .item-tile:last-child {
+      border-bottom: none;
+    }
+    .item-tile:hover {
+      background: var(--md-sys-color-surface-container-low);
+    }
+    .cat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .item-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .item-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .item-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .item-raw-amount {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .item-badges-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .act-tag {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .act-income { background: var(--activity-income-bg); color: var(--activity-income); }
+    .act-expense { background: var(--activity-expense-bg); color: var(--activity-expense); }
+    .act-saving { background: var(--activity-saving-bg); color: var(--activity-saving); }
+    .act-investing { background: var(--activity-investing-bg); color: var(--activity-investing); }
+    
+    .timeline-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--md-sys-color-surface-container-highest);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .monthly-runrate-label {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    /* Owners split indicator */
+    .owners-split-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .avatar-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Budget Line Card Header */
+    .line-card-header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      background: var(--md-sys-color-surface-container-low);
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .line-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .line-title-col {
+      flex: 1;
+    }
+    .line-name {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .line-meta {
+      font-size: 11px;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 2px;
+    }
+    .line-total-col {
+      text-align: right;
+    }
+    .line-sum-amount {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--md-sys-color-primary);
+    }
+
+    /* Floating Action Button (FAB) */
+    .fab-btn {
+      position: absolute;
+      right: 20px;
+      bottom: 86px;
+      padding: 14px 22px;
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .app-viewport.desktop-mode .fab-btn {
+      bottom: 24px;
+      right: 28px;
+    }
+    .fab-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    /* Bottom Navigation Bar (Mobile) */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      background: var(--md-sys-color-surface-container);
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 15;
+    }
+    .app-viewport.desktop-mode .bottom-nav {
+      display: none;
+    }
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      width: 70px;
+    }
+    .nav-pill {
+      width: 50px;
+      height: 30px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn.active .nav-pill {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+    .nav-btn.active {
+      color: var(--md-sys-color-on-surface);
+      font-weight: 700;
+    }
+
+    /* Empty State */
+    .empty-state {
+      padding: 60px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+    .empty-icon-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
+
+    /* Dialog / Modal Sheets */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      width: 100%;
+      max-width: 480px;
+      max-height: 90%;
+      overflow-y: auto;
+      background: var(--md-sys-color-surface);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    .m3-input, .m3-select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      font-size: 14px;
+      outline: none;
+    }
+    .m3-input:focus, .m3-select:focus {
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+    }
+    .segmented-control {
+      display: flex;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--md-sys-color-surface-container-high);
+    }
+    .segment-btn {
+      flex: 1;
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      background: none;
+      border: none;
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .segment-btn.active {
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .btn-filled {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-text {
+      background: none;
+      border: none;
+      padding: 10px 16px;
+      color: var(--md-sys-color-primary);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Preview Controls -->
+  <div class="preview-header">
+    <div class="preview-title">
+      <span class="material-symbols-rounded" style="color:var(--md-sys-color-primary)">account_balance_wallet</span>
+      <span>Just Budget — Interactive Preview</span>
+    </div>
+    <div class="preview-actions">
+      <button class="btn-toggle" id="toggleThemeBtn" onclick="toggleTheme()">
+        <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+      <button class="btn-toggle" id="toggleDeviceBtn" onclick="toggleViewportMode()">
+        <span class="material-symbols-rounded" id="deviceIcon">desktop_windows</span>
+        <span id="deviceLabel">Desktop View</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- App Viewport -->
+  <div class="app-viewport" id="appViewport">
+    <!-- Mobile Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span class="material-symbols-rounded" style="font-size:14px;">signal_cellular_4_bar</span>
+        <span class="material-symbols-rounded" style="font-size:14px;">wifi</span>
+        <span class="material-symbols-rounded" style="font-size:14px;">battery_full</span>
+      </div>
+    </div>
+
+    <!-- Desktop Split / Navigation Rail -->
+    <div class="desktop-layout-wrapper">
+      <div class="nav-rail">
+        <div class="nav-rail-item active" onclick="switchTab('budget')">
+          <div class="nav-rail-pill">
+            <span class="material-symbols-rounded">account_balance_wallet</span>
+          </div>
+          <span>Budget</span>
+        </div>
+        <div class="nav-rail-item" onclick="switchTab('insights')">
+          <div class="nav-rail-pill">
+            <span class="material-symbols-rounded">insights</span>
+          </div>
+          <span>Insights</span>
+        </div>
+        <div class="nav-rail-item" onclick="switchTab('settings')">
+          <div class="nav-rail-pill">
+            <span class="material-symbols-rounded">settings</span>
+          </div>
+          <span>Settings</span>
+        </div>
+      </div>
+
+      <!-- Main Scrollable Screen -->
+      <div class="screen-content" id="screenContent">
+
+        <!-- TAB: BUDGET -->
+        <div id="tab-budget" style="display:block;">
+          <div class="top-app-bar">
+            <span class="app-brand">Just Budget</span>
+            <button class="btn-toggle" onclick="showFirstLaunchPrompt()">
+              <span class="material-symbols-rounded" style="font-size:16px;">restart_alt</span>
+              <span>Setup Prompt</span>
+            </button>
+          </div>
+
+          <!-- Cashflow Hero -->
+          <div class="hero-card">
+            <div class="hero-label">Running Monthly Cash Flow</div>
+            <div class="hero-amount-row">
+              <span class="hero-net-amount" id="heroNetAmt">$0.00</span>
+              <span class="hero-badge badge-surplus" id="heroStatusBadge">Balanced</span>
+            </div>
+            <div class="pillars-grid">
+              <div class="pillar-col">
+                <div class="pillar-col-header" style="color:var(--activity-income);">
+                  <span class="material-symbols-rounded" style="font-size:14px;">arrow_downward</span> Income
+                </div>
+                <div class="pillar-col-val" id="pillarIncome">$0</div>
+              </div>
+              <div class="pillar-col">
+                <div class="pillar-col-header" style="color:var(--activity-expense);">
+                  <span class="material-symbols-rounded" style="font-size:14px;">arrow_upward</span> Expenses
+                </div>
+                <div class="pillar-col-val" id="pillarExpense">$0</div>
+              </div>
+              <div class="pillar-col">
+                <div class="pillar-col-header" style="color:var(--activity-saving);">
+                  <span class="material-symbols-rounded" style="font-size:14px;">savings</span> Savings
+                </div>
+                <div class="pillar-col-val" id="pillarSaving">$0</div>
+              </div>
+              <div class="pillar-col">
+                <div class="pillar-col-header" style="color:var(--activity-investing);">
+                  <span class="material-symbols-rounded" style="font-size:14px;">trending_up</span> Investing
+                </div>
+                <div class="pillar-col-val" id="pillarInvesting">$0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Person Filter Bar -->
+          <div class="filter-bar" id="personFilterBar"></div>
+
+          <!-- Standalone Items Section -->
+          <div id="directItemsContainer"></div>
+
+          <!-- Budget Lines Section -->
+          <div id="budgetLinesContainer"></div>
+
+          <!-- Empty State (if no items or lines) -->
+          <div id="emptyState" class="empty-state" style="display:none;">
+            <div class="empty-icon-circle">
+              <span class="material-symbols-rounded" style="font-size:36px;">account_balance_wallet</span>
+            </div>
+            <h3 style="font-weight:800;">No Budget Items Yet</h3>
+            <p style="font-size:13px;color:var(--md-sys-color-on-surface-variant);max-width:280px;">
+              Your budget is clean. Tap below to add a standalone item or create a grouped budget line.
+            </p>
+            <div style="display:flex;gap:10px;margin-top:10px;">
+              <button class="btn-filled" onclick="openAddModal()">+ Add Budget Item</button>
+              <button class="btn-toggle" onclick="openAddLineModal()">+ Add Line</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: INSIGHTS -->
+        <div id="tab-insights" style="display:none;padding:16px;">
+          <h2 style="font-weight:800;margin-bottom:16px;">Insights & Breakdown</h2>
+          <div class="m3-card" style="padding:20px;margin:0 0 16px;">
+            <div class="hero-label">Running Cash Flow Pillars</div>
+            <div id="insightsPillars"></div>
+          </div>
+
+          <div class="hero-label" style="margin-left:4px;">Household Responsibility Breakdown</div>
+          <div id="insightsPeopleCards"></div>
+        </div>
+
+        <!-- TAB: SETTINGS -->
+        <div id="tab-settings" style="display:none;padding:16px;">
+          <h2 style="font-weight:800;margin-bottom:16px;">Settings</h2>
+          
+          <div class="m3-card" style="padding:16px;margin:0 0 14px;">
+            <div class="form-label" style="margin-bottom:8px;">Theme Mode</div>
+            <div class="segmented-control">
+              <button class="segment-btn active" id="btnThemeLight" onclick="setThemePreference('light')">Light</button>
+              <button class="segment-btn" id="btnThemeDark" onclick="setThemePreference('dark')">Dark</button>
+            </div>
+          </div>
+
+          <div class="m3-card" style="padding:16px;margin:0 0 14px;">
+            <div class="form-label" style="margin-bottom:8px;">Currency Symbol</div>
+            <select class="m3-select" id="currencySelect" onchange="changeCurrency(this.value)">
+              <option value="$">US Dollar ($)</option>
+              <option value="€">Euro (€)</option>
+              <option value="£">British Pound (£)</option>
+              <option value="¥">Japanese Yen (¥)</option>
+              <option value="kr">Nordic Krona (kr)</option>
+            </select>
+          </div>
+
+          <div class="m3-card" style="padding:16px;margin:0 0 14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <div class="form-label">Manage Household People</div>
+              <button class="btn-text" onclick="openManagePeopleModal()">+ Add Person</button>
+            </div>
+            <div id="settingsPeopleList"></div>
+          </div>
+
+          <div class="m3-card" style="padding:16px;margin:0 0 14px;">
+            <div class="form-label" style="color:var(--md-sys-color-error);margin-bottom:6px;">Data Reset</div>
+            <p style="font-size:12px;color:var(--md-sys-color-on-surface-variant);margin-bottom:12px;">
+              Permanently clear all budget lines, items, and settings.
+            </p>
+            <button class="btn-toggle" style="color:var(--md-sys-color-error);border-color:var(--md-sys-color-error);" onclick="resetAllData()">
+              Reset Everything
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile FAB -->
+    <button class="fab-btn" onclick="openAddModal()">
+      <span class="material-symbols-rounded">add</span>
+      <span>Add Item</span>
+    </button>
+
+    <!-- Bottom Navigation Bar (Mobile) -->
+    <div class="bottom-nav">
+      <button class="nav-btn active" onclick="switchTab('budget')">
+        <div class="nav-pill"><span class="material-symbols-rounded">account_balance_wallet</span></div>
+        <span>Budget</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('insights')">
+        <div class="nav-pill"><span class="material-symbols-rounded">insights</span></div>
+        <span>Insights</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('settings')">
+        <div class="nav-pill"><span class="material-symbols-rounded">settings</span></div>
+        <span>Settings</span>
+      </button>
+    </div>
+
+    <!-- MODAL: First Launch Onboarding Prompt -->
+    <div class="modal-overlay" id="firstLaunchModal">
+      <div class="modal-card">
+        <div class="modal-title">
+          <span>Welcome to Just Budget</span>
+        </div>
+        <p style="font-size:13px;color:var(--md-sys-color-on-surface-variant);">
+          Let's set up who this budget is for and configure your initial items.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="m3-input" id="onboardName" value="Me">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Partner / Roommate (Optional)</label>
+          <input type="text" class="m3-input" id="onboardPartner" placeholder="e.g. Sam">
+        </div>
+
+        <div class="form-group" style="margin-top:6px;">
+          <label class="form-label">Quick Starter Items</label>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="chkIncome" checked> Primary Salary: $3,000 / month (Income)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="chkRent" checked> Rent / Housing: $1,200 / month (Expense)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="chkGroceries" checked> Groceries: $120 / week (~$520/mo) (Expense)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" id="chkSavings" checked> Emergency Reserve: $300 / month (Saving)
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-text" onclick="finishOnboarding(false)">Start Blank Slate</button>
+          <button class="btn-filled" onclick="finishOnboarding(true)">Save & Open</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Add/Edit BudgetItem -->
+    <div class="modal-overlay" id="addModal">
+      <div class="modal-card">
+        <div class="modal-title">
+          <span id="modalItemHeader">New Budget Item</span>
+          <span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeModal('addModal')">close</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Financial Activity</label>
+          <div class="segmented-control" id="activityControl">
+            <button class="segment-btn active" data-act="expense" onclick="selectActivity('expense')">Expense</button>
+            <button class="segment-btn" data-act="income" onclick="selectActivity('income')">Income</button>
+            <button class="segment-btn" data-act="saving" onclick="selectActivity('saving')">Saving</button>
+            <button class="segment-btn" data-act="investing" onclick="selectActivity('investing')">Investing</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Item Title</label>
+          <input type="text" class="m3-input" id="itemTitle" placeholder="e.g. Supermarket, Electric Bill">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="m3-select" id="itemCategorySelect"></select>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <div class="form-group" style="flex:3;">
+            <label class="form-label">Amount</label>
+            <input type="number" step="0.01" class="m3-input" id="itemAmount" placeholder="0.00" oninput="updateRunratePreview()">
+          </div>
+          <div class="form-group" style="flex:2;">
+            <label class="form-label">Timeline</label>
+            <select class="m3-select" id="itemTimeline" onchange="updateRunratePreview()">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="biWeekly">Bi-Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="halfYearly">Half-Yearly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="background:var(--md-sys-color-surface-container-high);padding:10px 14px;border-radius:12px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Normalized Monthly Run-Rate:</span>
+          <span style="font-weight:800;color:var(--md-sys-color-primary);" id="previewRunrate">$0.00 / mo</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Placement</label>
+          <select class="m3-select" id="itemPlacementSelect">
+            <option value="">Direct (Standalone on Budget List)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Assigned Owners (Equal Split)</label>
+          <div id="itemOwnersChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          <span style="font-size:11px;color:var(--md-sys-color-primary);margin-top:2px;" id="itemSplitPreview"></span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-text" onclick="closeModal('addModal')">Cancel</button>
+          <button class="btn-filled" onclick="saveBudgetItem()">Save Item</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Add/Edit BudgetLine -->
+    <div class="modal-overlay" id="addLineModal">
+      <div class="modal-card">
+        <div class="modal-title">
+          <span>New Budget Line</span>
+          <span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeModal('addLineModal')">close</span>
+        </div>
+        <p style="font-size:12px;color:var(--md-sys-color-on-surface-variant);">
+          A Budget Line groups child items and summarizes their run-rates. Child items inherit the line's default owners.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label">Line Name</label>
+          <input type="text" class="m3-input" id="lineNameInput" placeholder="e.g. Household & Living">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Default Owners (Inherited by items)</label>
+          <div id="lineOwnersChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-text" onclick="closeModal('addLineModal')">Cancel</button>
+          <button class="btn-filled" onclick="saveBudgetLine()">Save Line</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Data Model & State ---
+    const TIMELINE_FACTORS = {
+      daily: 365 / 12,
+      weekly: 52 / 12,
+      biWeekly: 26 / 12,
+      monthly: 1,
+      quarterly: 1 / 3,
+      halfYearly: 1 / 6,
+      yearly: 1 / 12
+    };
+
+    const TIMELINE_SUFFIX = {
+      daily: '/day',
+      weekly: '/wk',
+      biWeekly: '/2wks',
+      monthly: '/mo',
+      quarterly: '/qtr',
+      halfYearly: '/half-yr',
+      yearly: '/yr'
+    };
+
+    const DEFAULT_CATEGORIES = [
+      { id: 'cat_housing', name: 'Housing & Rent', icon: 'home', color: '#2E7D32' },
+      { id: 'cat_groceries', name: 'Groceries', icon: 'shopping_cart', color: '#388E3C' },
+      { id: 'cat_dining', name: 'Dining & Drinks', icon: 'restaurant', color: '#E65100' },
+      { id: 'cat_transport', name: 'Transportation', icon: 'directions_car', color: '#0277BD' },
+      { id: 'cat_utilities', name: 'Utilities & Bills', icon: 'lightbulb', color: '#F57F17' },
+      { id: 'cat_health', name: 'Health & Wellness', icon: 'favorite', color: '#C2185B' },
+      { id: 'cat_entertainment', name: 'Entertainment', icon: 'movie', color: '#7B1FA2' },
+      { id: 'cat_shopping', name: 'Shopping & Gear', icon: 'shopping_bag', color: '#D84315' },
+      { id: 'cat_income', name: 'Salary & Career', icon: 'work', color: '#00695C' },
+      { id: 'cat_savings', name: 'Savings & Reserve', icon: 'savings', color: '#00838F' },
+      { id: 'cat_investing', name: 'Investments', icon: 'trending_up', color: '#4A148C' },
+      { id: 'cat_other', name: 'General', icon: 'more_horiz', color: '#546E7A' }
+    ];
+
+    let state = {
+      theme: 'light',
+      currency: '$',
+      people: [],
+      items: [],
+      lines: [],
+      selectedPersonId: null,
+      activeTab: 'budget',
+      isFirstLaunchCompleted: false
+    };
+
+    function loadState() {
+      const saved = localStorage.getItem('just_budget_state');
+      if (saved) {
+        try {
+          state = JSON.parse(saved);
+        } catch (_) {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('just_budget_state', JSON.stringify(state));
+    }
+
+    // --- Math & Normalization ---
+    function normalizeMonthly(amount, timeline) {
+      const factor = TIMELINE_FACTORS[timeline] || 1;
+      return amount * factor;
+    }
+
+    function formatMoney(amount) {
+      return state.currency + Number(amount).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // --- DOM Elements & Setup ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      applyTheme(state.theme);
+      populateCategorySelect();
+
+      if (!state.isFirstLaunchCompleted && state.items.length === 0 && state.people.length === 0) {
+        showFirstLaunchPrompt();
+      } else {
+        renderAll();
+      }
+    });
+
+    function toggleTheme() {
+      const next = state.theme === 'light' ? 'dark' : 'light';
+      setThemePreference(next);
+    }
+
+    function setThemePreference(t) {
+      state.theme = t;
+      applyTheme(t);
+      saveState();
+    }
+
+    function applyTheme(t) {
+      document.body.setAttribute('data-theme', t);
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (t === 'dark') {
+        icon.textContent = 'light_mode';
+        label.textContent = 'Light Mode';
+        document.getElementById('btnThemeDark')?.classList.add('active');
+        document.getElementById('btnThemeLight')?.classList.remove('active');
+      } else {
+        icon.textContent = 'dark_mode';
+        label.textContent = 'Dark Mode';
+        document.getElementById('btnThemeLight')?.classList.add('active');
+        document.getElementById('btnThemeDark')?.classList.remove('active');
+      }
+    }
+
+    function toggleViewportMode() {
+      const vp = document.getElementById('appViewport');
+      const isDesk = vp.classList.toggle('desktop-mode');
+      document.getElementById('deviceLabel').textContent = isDesk ? 'Phone View' : 'Desktop View';
+      document.getElementById('deviceIcon').textContent = isDesk ? 'smartphone' : 'desktop_windows';
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.getElementById('tab-budget').style.display = tab === 'budget' ? 'block' : 'none';
+      document.getElementById('tab-insights').style.display = tab === 'insights' ? 'block' : 'none';
+      document.getElementById('tab-settings').style.display = tab === 'settings' ? 'block' : 'none';
+
+      document.querySelectorAll('.bottom-nav .nav-btn').forEach((b, i) => {
+        b.classList.toggle('active', ['budget', 'insights', 'settings'][i] === tab);
+      });
+      document.querySelectorAll('.nav-rail .nav-rail-item').forEach((b, i) => {
+        b.classList.toggle('active', ['budget', 'insights', 'settings'][i] === tab);
+      });
+
+      if (tab === 'insights') renderInsights();
+      if (tab === 'settings') renderSettings();
+    }
+
+    // --- Onboarding Prompt ---
+    function showFirstLaunchPrompt() {
+      document.getElementById('firstLaunchModal').classList.add('active');
+    }
+
+    function finishOnboarding(addStarters) {
+      const p1Name = document.getElementById('onboardName').value.trim() || 'Me';
+      const p2Name = document.getElementById('onboardPartner').value.trim();
+
+      const p1 = { id: 'p_' + Date.now(), name: p1Name, color: '#006C4C' };
+      state.people = [p1];
+
+      let p2Id = null;
+      if (p2Name) {
+        const p2 = { id: 'p_' + (Date.now() + 1), name: p2Name, color: '#0277BD' };
+        state.people.push(p2);
+        p2Id = p2.id;
+      }
+
+      const allOwners = [p1.id, ...(p2Id ? [p2Id] : [])];
+
+      if (addStarters) {
+        if (document.getElementById('chkIncome').checked) {
+          state.items.push({
+            id: 'i_' + Math.random(),
+            name: 'Primary Salary',
+            activity: 'income',
+            categoryId: 'cat_income',
+            amount: 3000,
+            timeline: 'monthly',
+            ownerIds: [p1.id],
+            budgetLineId: null
+          });
+        }
+
+        const addRent = document.getElementById('chkRent').checked;
+        const addGroc = document.getElementById('chkGroceries').checked;
+
+        if (addRent || addGroc) {
+          const lineId = 'l_' + Date.now();
+          state.lines.push({
+            id: lineId,
+            name: 'Household & Living',
+            defaultOwnerIds: allOwners
+          });
+
+          if (addRent) {
+            state.items.push({
+              id: 'i_' + Math.random(),
+              name: 'Rent / Mortgage',
+              activity: 'expense',
+              categoryId: 'cat_housing',
+              amount: 1200,
+              timeline: 'monthly',
+              ownerIds: [],
+              budgetLineId: lineId
+            });
+          }
+
+          if (addGroc) {
+            state.items.push({
+              id: 'i_' + Math.random(),
+              name: 'Groceries & Market',
+              activity: 'expense',
+              categoryId: 'cat_groceries',
+              amount: 120,
+              timeline: 'weekly',
+              ownerIds: [],
+              budgetLineId: lineId
+            });
+          }
+        }
+
+        if (document.getElementById('chkSavings').checked) {
+          state.items.push({
+            id: 'i_' + Math.random(),
+            name: 'Emergency Reserve',
+            activity: 'saving',
+            categoryId: 'cat_savings',
+            amount: 300,
+            timeline: 'monthly',
+            ownerIds: allOwners,
+            budgetLineId: null
+          });
+        }
+      }
+
+      state.isFirstLaunchCompleted = true;
+      saveState();
+      document.getElementById('firstLaunchModal').classList.remove('active');
+      renderAll();
+    }
+
+    // --- Rendering Core Budget ---
+    function renderAll() {
+      renderCashflowHero();
+      renderPersonFilterBar();
+      renderItemsAndLines();
+    }
+
+    function renderCashflowHero() {
+      let income = 0, expense = 0, saving = 0, investing = 0;
+      const personId = state.selectedPersonId;
+
+      // Calculate across all items
+      state.items.forEach(item => {
+        let parentLine = null;
+        if (item.budgetLineId) {
+          parentLine = state.lines.find(l => l.id === item.budgetLineId);
+        }
+        const effectiveOwners = (item.ownerIds && item.ownerIds.length > 0)
+          ? item.ownerIds
+          : (parentLine ? parentLine.defaultOwnerIds : []);
+
+        const norm = normalizeMonthly(item.amount, item.timeline);
+
+        if (personId) {
+          if (effectiveOwners.includes(personId)) {
+            const share = norm / effectiveOwners.length;
+            if (item.activity === 'income') income += share;
+            if (item.activity === 'expense') expense += share;
+            if (item.activity === 'saving') saving += share;
+            if (item.activity === 'investing') investing += share;
+          }
+        } else {
+          if (item.activity === 'income') income += norm;
+          if (item.activity === 'expense') expense += norm;
+          if (item.activity === 'saving') saving += norm;
+          if (item.activity === 'investing') investing += norm;
+        }
+      });
+
+      const outflow = expense + saving + investing;
+      const net = income - outflow;
+
+      document.getElementById('heroNetAmt').textContent = formatMoney(net);
+      document.getElementById('pillarIncome').textContent = formatMoney(income);
+      document.getElementById('pillarExpense').textContent = formatMoney(expense);
+      document.getElementById('pillarSaving').textContent = formatMoney(saving);
+      document.getElementById('pillarInvesting').textContent = formatMoney(investing);
+
+      const badge = document.getElementById('heroStatusBadge');
+      if (net >= 0) {
+        badge.className = 'hero-badge badge-surplus';
+        badge.textContent = 'Surplus';
+      } else {
+        badge.className = 'hero-badge badge-deficit';
+        badge.textContent = 'Deficit';
+      }
+    }
+
+    function renderPersonFilterBar() {
+      const bar = document.getElementById('personFilterBar');
+      bar.innerHTML = '';
+
+      if (state.people.length === 0) return;
+
+      // 'All People' chip
+      const allChip = document.createElement('div');
+      allChip.className = 'm3-chip ' + (state.selectedPersonId === null ? 'active' : '');
+      allChip.innerHTML = '<span class="material-symbols-rounded" style="font-size:16px;">people</span> All People';
+      allChip.onclick = () => {
+        state.selectedPersonId = null;
+        renderAll();
+      };
+      bar.appendChild(allChip);
+
+      state.people.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'm3-chip ' + (state.selectedPersonId === p.id ? 'active' : '');
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.onclick = () => {
+          state.selectedPersonId = p.id;
+          renderAll();
+        };
+        bar.appendChild(chip);
+      });
+    }
+
+    function renderItemsAndLines() {
+      const directCont = document.getElementById('directItemsContainer');
+      const linesCont = document.getElementById('budgetLinesContainer');
+      const emptyState = document.getElementById('emptyState');
+      directCont.innerHTML = '';
+      linesCont.innerHTML = '';
+
+      const personId = state.selectedPersonId;
+
+      // Filter standalone items
+      const directItems = state.items.filter(i => {
+        if (i.budgetLineId) return false;
+        if (!personId) return true;
+        const owners = i.ownerIds || [];
+        return owners.includes(personId);
+      });
+
+      // Filter lines
+      const activeLines = state.lines.filter(l => {
+        if (!personId) return true;
+        // Show line if line default has person OR any item has person
+        const lineItems = state.items.filter(i => i.budgetLineId === l.id);
+        const hasOwnedItem = lineItems.some(i => {
+          const owners = (i.ownerIds && i.ownerIds.length) ? i.ownerIds : l.defaultOwnerIds;
+          return owners.includes(personId);
+        });
+        return hasOwnedItem || (l.defaultOwnerIds && l.defaultOwnerIds.includes(personId));
+      });
+
+      if (directItems.length === 0 && activeLines.length === 0) {
+        emptyState.style.display = 'flex';
+      } else {
+        emptyState.style.display = 'none';
+      }
+
+      // Render direct items
+      if (directItems.length > 0) {
+        directCont.innerHTML = `
+          <div class="section-label">
+            <span>DIRECT BUDGET ITEMS</span>
+            <span class="count-pill">${directItems.length}</span>
+          </div>
+          <div class="m3-card" id="directCard"></div>
+        `;
+        const card = document.getElementById('directCard');
+        directItems.forEach(item => {
+          card.appendChild(createItemTile(item));
+        });
+      }
+
+      // Render budget lines
+      if (activeLines.length > 0) {
+        const header = document.createElement('div');
+        header.className = 'section-label';
+        header.innerHTML = `<span>BUDGET LINES & GROUPS</span> <span class="count-pill">${activeLines.length}</span>`;
+        linesCont.appendChild(header);
+
+        activeLines.forEach(line => {
+          linesCont.appendChild(createBudgetLineCard(line));
+        });
+      }
+    }
+
+    function createItemTile(item, parentLine = null) {
+      const tile = document.createElement('div');
+      tile.className = 'item-tile';
+
+      const cat = DEFAULT_CATEGORIES.find(c => c.id === item.categoryId) || DEFAULT_CATEGORIES[0];
+      const norm = normalizeMonthly(item.amount, item.timeline);
+
+      const effectiveOwners = (item.ownerIds && item.ownerIds.length > 0)
+        ? item.ownerIds
+        : (parentLine ? parentLine.defaultOwnerIds : []);
+
+      const ownerObjects = effectiveOwners.map(id => state.people.find(p => p.id === id)).filter(Boolean);
+      const isInherited = (!item.ownerIds || item.ownerIds.length === 0) && parentLine;
+
+      let ownerHtml = '';
+      if (ownerObjects.length > 0) {
+        const splitVal = norm / ownerObjects.length;
+        ownerHtml = `
+          <div class="owners-split-row">
+            ${ownerObjects.map(o => `<span class="avatar-circle" style="background:${o.color}">${o.name.slice(0,2).toUpperCase()}</span>`).join('')}
+            <span>${ownerObjects.length > 1 ? `(${formatMoney(splitVal)}/mo each)` : ''} ${isInherited ? '• inherited' : ''}</span>
+          </div>
+        `;
+      }
+
+      tile.innerHTML = `
+        <div class="cat-avatar" style="background:${cat.color}22;color:${cat.color};">
+          <span class="material-symbols-rounded">${cat.icon}</span>
+        </div>
+        <div class="item-info">
+          <div class="item-title-row">
+            <span class="item-name">${item.name}</span>
+            <span class="item-raw-amount">${formatMoney(item.amount)} <small style="font-size:11px;font-weight:600;">${TIMELINE_SUFFIX[item.timeline]}</small></span>
+          </div>
+          <div class="item-badges-row">
+            <span class="act-tag act-${item.activity}">
+              <span class="material-symbols-rounded" style="font-size:12px;">${getActivityIcon(item.activity)}</span>
+              ${item.activity.toUpperCase()}
+            </span>
+            <span class="timeline-tag">${item.timeline}</span>
+            ${item.timeline !== 'monthly' ? `<span class="monthly-runrate-label">~${formatMoney(norm)}/mo</span>` : ''}
+          </div>
+          ${ownerHtml}
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--md-sys-color-outline);font-size:18px;margin-top:2px;">edit</span>
+      `;
+
+      tile.onclick = () => openEditModal(item);
+      return tile;
+    }
+
+    function createBudgetLineCard(line) {
+      const card = document.createElement('div');
+      card.className = 'm3-card';
+
+      const lineItems = state.items.filter(i => i.budgetLineId === line.id);
+      let lineTotal = 0;
+      lineItems.forEach(i => {
+        const norm = normalizeMonthly(i.amount, i.timeline);
+        if (state.selectedPersonId) {
+          const owners = (i.ownerIds && i.ownerIds.length) ? i.ownerIds : line.defaultOwnerIds;
+          if (owners.includes(state.selectedPersonId)) {
+            lineTotal += norm / owners.length;
+          }
+        } else {
+          lineTotal += norm;
+        }
+      });
+
+      const defaultOwners = (line.defaultOwnerIds || []).map(id => state.people.find(p => p.id === id)).filter(Boolean);
+
+      const header = document.createElement('div');
+      header.className = 'line-card-header';
+      header.innerHTML = `
+        <div class="line-icon-box">
+          <span class="material-symbols-rounded">folder</span>
+        </div>
+        <div class="line-title-col">
+          <div class="line-name">
+            ${line.name}
+            <span class="count-pill">${lineItems.length} items</span>
+          </div>
+          <div class="line-meta">
+            Default owners: ${defaultOwners.map(o => o.name).join(', ') || 'None'}
+          </div>
+        </div>
+        <div class="line-total-col">
+          <div class="line-sum-amount">${formatMoney(lineTotal)}/mo</div>
+          ${state.selectedPersonId ? '<div style="font-size:10px;color:var(--md-sys-color-outline);">their share</div>' : ''}
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--md-sys-color-on-surface-variant)">expand_less</span>
+      `;
+
+      const itemsCont = document.createElement('div');
+      itemsCont.className = 'line-items-body';
+
+      if (lineItems.length === 0) {
+        itemsCont.innerHTML = `
+          <div style="padding:16px;text-align:center;font-size:12px;color:var(--md-sys-color-on-surface-variant);">
+            No items in this line yet. <a href="#" style="color:var(--md-sys-color-primary);font-weight:700;" onclick="event.preventDefault();openAddModal('${line.id}')">Add item</a>
+          </div>
+        `;
+      } else {
+        lineItems.forEach(item => {
+          itemsCont.appendChild(createItemTile(item, line));
+        });
+      }
+
+      header.onclick = (e) => {
+        if (e.target.closest('a')) return;
+        const isHidden = itemsCont.style.display === 'none';
+        itemsCont.style.display = isHidden ? 'block' : 'none';
+        header.querySelector('span:last-child').textContent = isHidden ? 'expand_less' : 'expand_more';
+      };
+
+      card.appendChild(header);
+      card.appendChild(itemsCont);
+      return card;
+    }
+
+    function getActivityIcon(act) {
+      if (act === 'income') return 'arrow_downward';
+      if (act === 'expense') return 'arrow_upward';
+      if (act === 'saving') return 'savings';
+      return 'trending_up';
+    }
+
+    // --- Insights Rendering ---
+    function renderInsights() {
+      let income = 0, expense = 0, saving = 0, investing = 0;
+      state.items.forEach(i => {
+        const norm = normalizeMonthly(i.amount, i.timeline);
+        if (i.activity === 'income') income += norm;
+        if (i.activity === 'expense') expense += norm;
+        if (i.activity === 'saving') saving += norm;
+        if (i.activity === 'investing') investing += norm;
+      });
+
+      const totalOutflow = expense + saving + investing;
+      const refTotal = income > 0 ? income : totalOutflow;
+
+      function renderBar(label, amt, color) {
+        const pct = refTotal > 0 ? Math.min(100, (amt / refTotal) * 100).toFixed(1) : 0;
+        return `
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:4px;">
+              <span>${label}</span>
+              <span style="color:${color}">${formatMoney(amt)}/mo (${pct}%)</span>
+            </div>
+            <div style="height:8px;background:${color}22;border-radius:4px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('insightsPillars').innerHTML = `
+        ${renderBar('Living Expenses', expense, '#BA1A1A')}
+        ${renderBar('Savings Reserves', saving, '#0277BD')}
+        ${renderBar('Wealth Investments', investing, '#6A1B9A')}
+      `;
+
+      // People cards
+      const cont = document.getElementById('insightsPeopleCards');
+      cont.innerHTML = '';
+      state.people.forEach(p => {
+        let pInc = 0, pExp = 0, pSav = 0, pInv = 0;
+        state.items.forEach(item => {
+          let parentLine = item.budgetLineId ? state.lines.find(l => l.id === item.budgetLineId) : null;
+          const owners = (item.ownerIds && item.ownerIds.length) ? item.ownerIds : (parentLine ? parentLine.defaultOwnerIds : []);
+          if (owners.includes(p.id)) {
+            const share = normalizeMonthly(item.amount, item.timeline) / owners.length;
+            if (item.activity === 'income') pInc += share;
+            if (item.activity === 'expense') pExp += share;
+            if (item.activity === 'saving') pSav += share;
+            if (item.activity === 'investing') pInv += share;
+          }
+        });
+
+        const pNet = pInc - (pExp + pSav + pInv);
+        const card = document.createElement('div');
+        card.className = 'm3-card';
+        card.style.padding = '16px';
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span class="avatar-circle" style="background:${p.color};width:24px;height:24px;font-size:11px;">${p.name.slice(0,2).toUpperCase()}</span>
+              <span style="font-weight:800;font-size:15px;">${p.name}</span>
+            </div>
+            <span style="font-weight:800;color:${pNet >= 0 ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-error)'}">
+              Net: ${formatMoney(pNet)}/mo
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;border-top:1px solid var(--md-sys-color-outline-variant);padding-top:10px;font-size:12px;">
+            <div><small style="color:var(--activity-income);font-weight:700;">Income</small><div style="font-weight:800;">${formatMoney(pInc)}</div></div>
+            <div><small style="color:var(--activity-expense);font-weight:700;">Expense</small><div style="font-weight:800;">${formatMoney(pExp)}</div></div>
+            <div><small style="color:var(--activity-saving);font-weight:700;">Saving</small><div style="font-weight:800;">${formatMoney(pSav)}</div></div>
+            <div><small style="color:var(--activity-investing);font-weight:700;">Investing</small><div style="font-weight:800;">${formatMoney(pInv)}</div></div>
+          </div>
+        `;
+        cont.appendChild(card);
+      });
+    }
+
+    // --- Settings Rendering ---
+    function renderSettings() {
+      document.getElementById('currencySelect').value = state.currency;
+      const list = document.getElementById('settingsPeopleList');
+      list.innerHTML = '';
+      state.people.forEach(p => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--md-sys-color-outline-variant);';
+        row.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="avatar-circle" style="background:${p.color};width:22px;height:22px;">${p.name.slice(0,2).toUpperCase()}</span>
+            <span style="font-weight:700;font-size:13px;">${p.name}</span>
+          </div>
+          <button style="background:none;border:none;color:var(--md-sys-color-error);cursor:pointer;" onclick="deletePerson('${p.id}')">
+            <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
+          </button>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    function changeCurrency(c) {
+      state.currency = c;
+      saveState();
+      renderAll();
+    }
+
+    function deletePerson(id) {
+      state.people = state.people.filter(p => p.id !== id);
+      if (state.selectedPersonId === id) state.selectedPersonId = null;
+      saveState();
+      renderSettings();
+      renderAll();
+    }
+
+    function openManagePeopleModal() {
+      const name = prompt('Enter new person name:');
+      if (name && name.trim()) {
+        const colors = ['#006C4C', '#0277BD', '#C2185B', '#7B1FA2', '#E65100', '#00838F'];
+        const color = colors[state.people.length % colors.length];
+        state.people.push({ id: 'p_' + Date.now(), name: name.trim(), color: color });
+        saveState();
+        renderSettings();
+        renderAll();
+      }
+    }
+
+    function resetAllData() {
+      if (confirm('Are you sure you want to delete all budget data and start completely fresh?')) {
+        localStorage.removeItem('just_budget_state');
+        state = {
+          theme: 'light',
+          currency: '$',
+          people: [],
+          items: [],
+          lines: [],
+          selectedPersonId: null,
+          activeTab: 'budget',
+          isFirstLaunchCompleted: false
+        };
+        showFirstLaunchPrompt();
+      }
+    }
+
+    // --- Modal Item Flow ---
+    let currentEditingItemId = null;
+    let selectedActivity = 'expense';
+    let selectedItemOwners = [];
+
+    function populateCategorySelect() {
+      const sel = document.getElementById('itemCategorySelect');
+      sel.innerHTML = DEFAULT_CATEGORIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    }
+
+    function selectActivity(act) {
+      selectedActivity = act;
+      document.querySelectorAll('#activityControl .segment-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-act') === act);
+      });
+    }
+
+    function updateRunratePreview() {
+      const amt = parseFloat(document.getElementById('itemAmount').value) || 0;
+      const timeline = document.getElementById('itemTimeline').value;
+      const monthly = normalizeMonthly(amt, timeline);
+      document.getElementById('previewRunrate').textContent = formatMoney(monthly) + ' / mo';
+
+      const splitCount = selectedItemOwners.length > 0 ? selectedItemOwners.length : 1;
+      if (splitCount > 1) {
+        document.getElementById('itemSplitPreview').textContent = `Equal split: ${formatMoney(monthly / splitCount)}/mo for each owner.`;
+      } else {
+        document.getElementById('itemSplitPreview').textContent = '';
+      }
+    }
+
+    function openAddModal(lineId = null) {
+      currentEditingItemId = null;
+      document.getElementById('modalItemHeader').textContent = 'New Budget Item';
+      document.getElementById('itemTitle').value = '';
+      document.getElementById('itemAmount').value = '';
+      document.getElementById('itemTimeline').value = 'monthly';
+      selectActivity('expense');
+      selectedItemOwners = [];
+
+      populatePlacementSelect(lineId);
+      renderOwnerChips();
+      updateRunratePreview();
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function openEditModal(item) {
+      currentEditingItemId = item.id;
+      document.getElementById('modalItemHeader').textContent = 'Edit Budget Item';
+      document.getElementById('itemTitle').value = item.name;
+      document.getElementById('itemAmount').value = item.amount;
+      document.getElementById('itemTimeline').value = item.timeline;
+      document.getElementById('itemCategorySelect').value = item.categoryId;
+      selectActivity(item.activity);
+      selectedItemOwners = [...(item.ownerIds || [])];
+
+      populatePlacementSelect(item.budgetLineId);
+      renderOwnerChips();
+      updateRunratePreview();
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function populatePlacementSelect(selectedLineId) {
+      const sel = document.getElementById('itemPlacementSelect');
+      sel.innerHTML = '<option value="">Direct (Standalone on Budget List)</option>';
+      state.lines.forEach(l => {
+        sel.innerHTML += `<option value="${l.id}" ${l.id === selectedLineId ? 'selected' : ''}>Under Budget Line: ${l.name}</option>`;
+      });
+    }
+
+    function renderOwnerChips() {
+      const cont = document.getElementById('itemOwnersChips');
+      cont.innerHTML = '';
+      state.people.forEach(p => {
+        const chip = document.createElement('div');
+        const isSelected = selectedItemOwners.includes(p.id);
+        chip.className = 'm3-chip ' + (isSelected ? 'active' : '');
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.onclick = () => {
+          if (selectedItemOwners.includes(p.id)) {
+            selectedItemOwners = selectedItemOwners.filter(id => id !== p.id);
+          } else {
+            selectedItemOwners.push(p.id);
+          }
+          renderOwnerChips();
+          updateRunratePreview();
+        };
+        cont.appendChild(chip);
+      });
+    }
+
+    function saveBudgetItem() {
+      const title = document.getElementById('itemTitle').value.trim();
+      const amount = parseFloat(document.getElementById('itemAmount').value);
+      const timeline = document.getElementById('itemTimeline').value;
+      const categoryId = document.getElementById('itemCategorySelect').value;
+      const placement = document.getElementById('itemPlacementSelect').value || null;
+
+      if (!title || isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid title and amount > 0');
+        return;
+      }
+
+      if (currentEditingItemId) {
+        const item = state.items.find(i => i.id === currentEditingItemId);
+        if (item) {
+          item.name = title;
+          item.amount = amount;
+          item.timeline = timeline;
+          item.activity = selectedActivity;
+          item.categoryId = categoryId;
+          item.budgetLineId = placement;
+          item.ownerIds = selectedItemOwners;
+        }
+      } else {
+        state.items.push({
+          id: 'i_' + Date.now(),
+          name: title,
+          amount: amount,
+          timeline: timeline,
+          activity: selectedActivity,
+          categoryId: categoryId,
+          budgetLineId: placement,
+          ownerIds: selectedItemOwners
+        });
+      }
+
+      saveState();
+      closeModal('addModal');
+      renderAll();
+    }
+
+    // --- Modal Line Flow ---
+    let selectedLineOwners = [];
+    function openAddLineModal() {
+      document.getElementById('lineNameInput').value = '';
+      selectedLineOwners = [];
+      const cont = document.getElementById('lineOwnersChips');
+      cont.innerHTML = '';
+      state.people.forEach(p => {
+        const chip = document.createElement('div');
+        chip.className = 'm3-chip';
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.onclick = () => {
+          chip.classList.toggle('active');
+          if (selectedLineOwners.includes(p.id)) {
+            selectedLineOwners = selectedLineOwners.filter(id => id !== p.id);
+          } else {
+            selectedLineOwners.push(p.id);
+          }
+        };
+        cont.appendChild(chip);
+      });
+      document.getElementById('addLineModal').classList.add('active');
+    }
+
+    function saveBudgetLine() {
+      const name = document.getElementById('lineNameInput').value.trim();
+      if (!name) {
+        alert('Please enter a line name');
+        return;
+      }
+      state.lines.push({
+        id: 'l_' + Date.now(),
+        name: name,
+        defaultOwnerIds: selectedLineOwners
+      });
+      saveState();
+      closeModal('addLineModal');
+      renderAll();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+  </script>
+</body>
+</html>
