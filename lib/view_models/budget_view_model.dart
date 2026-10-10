@@ -24,6 +24,8 @@ class BudgetViewModel extends ChangeNotifier {
 
   String? get selectedPersonId => _selectedPersonId;
 
+  void notifyDataChanged() => notifyListeners();
+
   void selectPerson(String? personId) {
     _selectedPersonId = personId;
     notifyListeners();

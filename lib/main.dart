@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'data/repositories/budget_repository.dart';
 import 'data/repositories/category_repository.dart';
 import 'data/repositories/settings_repository.dart';
+import 'data/services/firebase_bootstrap.dart';
+import 'data/services/firebase_cloud_sync_service.dart';
 import 'data/services/storage_service.dart';
 import 'theme/app_theme.dart';
 import 'ui/budget/budget_screen.dart';
@@ -15,6 +19,7 @@ import 'view_models/budget_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final firebaseApp = await FirebaseBootstrap.initialize();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -41,20 +46,41 @@ void main() async {
     categoryRepo: categoryRepo,
   );
 
+  final firebaseAuth = firebaseApp == null ? null : FirebaseAuth.instance;
+  final cloudSyncService = firebaseApp == null
+      ? null
+      : FirebaseCloudSyncService(
+          firestore: FirebaseFirestore.instance,
+          storage: storageService,
+          reloadRepositories: () async {
+            await settingsRepo.reload();
+            await categoryRepo.reload();
+            await budgetRepo.reload();
+            settingsViewModel.notifyDataChanged();
+            budgetViewModel.notifyDataChanged();
+          },
+        );
+
   runApp(JustBudgetApp(
     settingsViewModel: settingsViewModel,
     budgetViewModel: budgetViewModel,
+    firebaseAuth: firebaseAuth,
+    cloudSyncService: cloudSyncService,
   ));
 }
 
 class JustBudgetApp extends StatelessWidget {
   final AppSettingsViewModel settingsViewModel;
   final BudgetViewModel budgetViewModel;
+  final FirebaseAuth? firebaseAuth;
+  final FirebaseCloudSyncService? cloudSyncService;
 
   const JustBudgetApp({
     super.key,
     required this.settingsViewModel,
     required this.budgetViewModel,
+    required this.firebaseAuth,
+    required this.cloudSyncService,
   });
 
   @override
@@ -71,6 +97,8 @@ class JustBudgetApp extends StatelessWidget {
           home: MainNavigationShell(
             settingsViewModel: settingsViewModel,
             budgetViewModel: budgetViewModel,
+            firebaseAuth: firebaseAuth,
+            cloudSyncService: cloudSyncService,
           ),
         );
       },
@@ -81,11 +109,15 @@ class JustBudgetApp extends StatelessWidget {
 class MainNavigationShell extends StatefulWidget {
   final AppSettingsViewModel settingsViewModel;
   final BudgetViewModel budgetViewModel;
+  final FirebaseAuth? firebaseAuth;
+  final FirebaseCloudSyncService? cloudSyncService;
 
   const MainNavigationShell({
     super.key,
     required this.settingsViewModel,
     required this.budgetViewModel,
+    required this.firebaseAuth,
+    required this.cloudSyncService,
   });
 
   @override
@@ -134,6 +166,8 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       SettingsScreen(
         settingsViewModel: widget.settingsViewModel,
         budgetViewModel: widget.budgetViewModel,
+        firebaseAuth: widget.firebaseAuth,
+        cloudSyncService: widget.cloudSyncService,
       ),
     ];
 

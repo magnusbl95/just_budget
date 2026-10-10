@@ -15,7 +15,36 @@ class Category {
     this.isDefault = true,
   });
 
-  IconData get icon => IconData(iconCodePoint, fontFamily: 'MaterialIcons');
+  IconData get icon {
+    switch (iconCodePoint) {
+      case 0xe318:
+        return Icons.home;
+      case 0xe59c:
+        return Icons.shopping_cart;
+      case 0xe57a:
+        return Icons.restaurant;
+      case 0xe1d7:
+        return Icons.directions_car;
+      case 0xe3ae:
+        return Icons.lightbulb;
+      case 0xe3ab:
+        return Icons.local_hospital;
+      case 0xe40f:
+        return Icons.movie;
+      case 0xe59b:
+        return Icons.shopping_bag;
+      case 0xe6f2:
+        return Icons.work;
+      case 0xe655:
+        return Icons.trending_up;
+      case 0xe040:
+        return Icons.savings;
+      case 0xe3e6:
+        return Icons.more_horiz;
+      default:
+        return Icons.label_outline_rounded;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,

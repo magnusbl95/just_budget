@@ -41,12 +41,10 @@ class ActivityBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: isDark ? 0.22 : 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.override(
-          border: Border.all(
-            color: color.withValues(alpha: isDark ? 0.45 : 0.25),
-            width: 1,
-          ),
-        ).border,
+        border: Border.all(
+          color: color.withValues(alpha: isDark ? 0.45 : 0.25),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
