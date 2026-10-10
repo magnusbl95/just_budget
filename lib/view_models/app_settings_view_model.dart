@@ -13,6 +13,8 @@ class AppSettingsViewModel extends ChangeNotifier {
 
   AppSettings get settings => _repository.current;
 
+  void notifyDataChanged() => notifyListeners();
+
   ThemeMode get themeMode {
     switch (settings.themePreference) {
       case ThemePreference.light:

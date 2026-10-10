@@ -1,27 +1,35 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../data/services/firebase_cloud_sync_service.dart';
 import '../../domain/enums/theme_preference.dart';
 import '../../view_models/app_settings_view_model.dart';
 import '../../view_models/budget_view_model.dart';
+import 'firebase_account_section.dart';
 import 'manage_people_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
   final AppSettingsViewModel settingsViewModel;
   final BudgetViewModel budgetViewModel;
+  final FirebaseAuth? firebaseAuth;
+  final FirebaseCloudSyncService? cloudSyncService;
 
   const SettingsScreen({
     super.key,
     required this.settingsViewModel,
     required this.budgetViewModel,
+    required this.firebaseAuth,
+    required this.cloudSyncService,
   });
 
   void _showCurrencyDialog(BuildContext context) {
     const currencies = [
-      {'code': 'USD', 'symbol': r'$', 'name': 'US Dollar ($)'},
+      {'code': 'USD', 'symbol': r'$', 'name': r'US Dollar ($)'},
       {'code': 'EUR', 'symbol': '€', 'name': 'Euro (€)'},
       {'code': 'GBP', 'symbol': '£', 'name': 'British Pound (£)'},
       {'code': 'JPY', 'symbol': '¥', 'name': 'Japanese Yen (¥)'},
-      {'code': 'CAD', 'symbol': r'$', 'name': 'Canadian Dollar (CAD $)'},
-      {'code': 'AUD', 'symbol': r'$', 'name': 'Australian Dollar (AUD $)'},
+      {'code': 'CAD', 'symbol': r'$', 'name': r'Canadian Dollar (CAD $)'},
+      {'code': 'AUD', 'symbol': r'$', 'name': r'Australian Dollar (AUD $)'},
       {'code': 'CHF', 'symbol': 'CHF', 'name': 'Swiss Franc (CHF)'},
       {'code': 'SEK', 'symbol': 'kr', 'name': 'Swedish Krona (kr)'},
     ];
@@ -174,6 +182,14 @@ class SettingsScreen extends StatelessWidget {
                     );
                   },
                 ),
+              ),
+              const SizedBox(height: 16),
+
+              // Account / Cloud Sync
+              _buildSectionHeader('ACCOUNT & CLOUD SYNC', theme, colorScheme),
+              FirebaseAccountSection(
+                auth: firebaseAuth,
+                cloudSync: cloudSyncService,
               ),
               const SizedBox(height: 16),
 

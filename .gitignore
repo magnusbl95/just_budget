@@ -28,6 +28,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/.firebase/
 
 # Symbol specification
 app.*.symbols

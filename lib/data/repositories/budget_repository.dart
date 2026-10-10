@@ -19,6 +19,8 @@ class BudgetRepository {
     _lines = linesJson.map((e) => BudgetLine.fromJson(e)).toList();
   }
 
+  Future<void> reload() => init();
+
   /// Reassembles the living Budget aggregate
   Budget getBudget({String name = 'Running Budget'}) {
     final direct = _items.where((i) => i.isStandalone).toList();

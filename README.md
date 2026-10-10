@@ -56,12 +56,60 @@ powershell -ExecutionPolicy Bypass -File preview/serve.ps1 -Port 8085
 ```
 Then visit `http://localhost:8085/`.
 
-### 2. Flutter Application
-Ensure Flutter is installed and run:
-```bash
+### 2. One-time setup (web on Android, desktop, and iPhone)
+The simplest first release is one hosted web app: open it in Chrome on Android
+and desktop, and Safari on iPhone. Add it to each phone's Home Screen for an
+app-like shortcut. This avoids installing native Android/iOS build tools;
+native mobile builds can be added later.
+
+Install [Flutter](https://docs.flutter.dev/get-started/install),
+[Node.js](https://nodejs.org/), and the
+[Firebase CLI](https://firebase.google.com/docs/cli). Open PowerShell at the
+repository root and run:
+
+```powershell
+# Generate the web runner project (one time).
+flutter create --platforms=web .
 flutter pub get
-flutter run
+npm install -g firebase-tools
+firebase login
+dart pub global activate flutterfire_cli
 ```
+
+Create a project in the [Firebase Console](https://console.firebase.google.com/),
+then configure the web app and deploy the included access rules:
+
+```powershell
+flutterfire configure --project YOUR_FIREBASE_PROJECT_ID --platforms web
+firebase deploy --only firestore:rules --project YOUR_FIREBASE_PROJECT_ID
+```
+
+The FlutterFire command creates the web app registration and generates
+`lib/firebase_options.dart`; no copying API keys or `--dart-define` arguments
+is needed. In the Firebase Console, enable **Email/Password** in
+**Authentication → Sign-in method** and create a database in **Firestore
+Database**.
+
+For local development, run in Chrome. To publish, build and deploy to Firebase
+Hosting:
+
+```powershell
+flutter run -d chrome
+flutter build web --release
+firebase deploy --only hosting --project YOUR_FIREBASE_PROJECT_ID
+```
+
+Open the `web.app` Hosting URL in Chrome on Android or Safari on iPhone. Use
+**Add to Home Screen** in each phone's browser for an app-like shortcut. Native
+Android and iOS builds can be configured later with
+`flutterfire configure --platforms android,ios`; iOS builds require macOS and
+Xcode.
+
+Firebase stays optional until configured; without it, local storage continues
+to work. A new account uploads existing local budget data. On a new device,
+existing cloud data is restored; if both local and cloud budgets exist, the app
+asks which copy to keep. Signing out keeps the local copy. Firestore access is
+limited by `firestore.rules` to the signed-in owner of each user's data.
 
 ### 3. Run Automated Tests
 ```bash

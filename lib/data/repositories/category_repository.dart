@@ -17,6 +17,8 @@ class CategoryRepository {
     }
   }
 
+  Future<void> reload() => init();
+
   List<Category> getAll() => List.unmodifiable(_categories);
 
   Category? getById(String id) {

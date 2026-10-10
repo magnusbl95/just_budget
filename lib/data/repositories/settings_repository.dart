@@ -17,6 +17,8 @@ class SettingsRepository {
     }
   }
 
+  Future<void> reload() => init();
+
   AppSettings get current => _settings;
 
   Future<void> update(AppSettings newSettings) async {
