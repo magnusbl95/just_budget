@@ -22,7 +22,7 @@ class FirstLaunchSetupSheet extends StatefulWidget {
 
 class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
   int _currentStep = 0;
-  final _nameController = TextEditingController(text: 'Me');
+  final _nameController = TextEditingController();
   final _partnerController = TextEditingController();
   bool _addSecondPerson = false;
 
@@ -57,7 +57,9 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
   Future<void> _completeSetup({bool addStarters = true}) async {
     // 1. Create People
     final person1 = await widget.settingsViewModel.addPerson(
-      _nameController.text.trim().isEmpty ? 'Me' : _nameController.text.trim(),
+      _nameController.text.trim().isEmpty
+          ? 'Primary Person'
+          : _nameController.text.trim(),
       0xFF006C4C, // Emerald
     );
 
@@ -107,7 +109,8 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
         }
 
         if (_includeGroceries && _groceriesAmountController.text.isNotEmpty) {
-          final amount = double.tryParse(_groceriesAmountController.text) ?? 120;
+          final amount =
+              double.tryParse(_groceriesAmountController.text) ?? 120;
           await widget.budgetViewModel.addBudgetItem(
             name: 'Groceries & Market',
             activity: BudgetActivity.expense,
@@ -148,7 +151,8 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
         constraints: const BoxConstraints(maxWidth: 620),
         child: Dialog(
           backgroundColor: colorScheme.surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: SingleChildScrollView(
@@ -214,12 +218,14 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
       children: [
         Text(
           'Personalize Your Budget',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
           'Budgets can be individual or shared. Enter your name below to track who owns which budget items.',
-          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 18),
         TextField(
@@ -227,7 +233,7 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
           decoration: const InputDecoration(
             labelText: 'Your Name or Display Label',
             prefixIcon: Icon(Icons.person_rounded),
-            hintText: 'e.g. Alex, Me',
+            hintText: 'e.g. Alex, Sam',
           ),
         ),
         const SizedBox(height: 14),
@@ -262,12 +268,14 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
       children: [
         Text(
           'Quick Budget Setup',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
         Text(
           'Configure your recurring items and timelines. You can also skip this and start completely blank.',
-          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
 
@@ -359,14 +367,19 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
             value: enabled,
             onChanged: (v) => onToggle(v ?? false),
           ),
-          Icon(icon, size: 20, color: enabled ? colorScheme.primary : colorScheme.onSurfaceVariant),
+          Icon(icon,
+              size: 20,
+              color:
+                  enabled ? colorScheme.primary : colorScheme.onSurfaceVariant),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               title,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: enabled ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
+                color: enabled
+                    ? colorScheme.onSurface
+                    : colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -378,10 +391,12 @@ class _FirstLaunchSetupSheetState extends State<FirstLaunchSetupSheet> {
                 controller: amountController,
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.right,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 decoration: InputDecoration(
                   prefixText: widget.settingsViewModel.currencySymbol,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 ),
               ),
             ),

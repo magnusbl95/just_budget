@@ -7,6 +7,71 @@ import 'package:just_budget/domain/models/budget_line.dart';
 import 'package:just_budget/domain/models/person.dart';
 
 void main() {
+  group('Person assignment checks', () {
+    const directItem = BudgetItem(
+      id: 'direct',
+      name: 'Rent',
+      activity: BudgetActivity.expense,
+      categoryId: 'cat_housing',
+      amount: 1000,
+      timeline: BudgetItemTimeline.monthly,
+      ownerIds: ['person_a'],
+    );
+    const inheritedItem = BudgetItem(
+      id: 'inherited',
+      name: 'Groceries',
+      budgetLineId: 'line_household',
+      activity: BudgetActivity.expense,
+      categoryId: 'cat_groceries',
+      amount: 100,
+      timeline: BudgetItemTimeline.monthly,
+    );
+
+    test('detects direct item assignments', () {
+      const budget = Budget(
+        id: 'budget',
+        name: 'Budget',
+        directItems: [directItem],
+      );
+
+      expect(budget.isPersonAssignedToItem('person_a'), isTrue);
+      expect(budget.isPersonAssignedToItem('person_b'), isFalse);
+    });
+
+    test('detects owners inherited by items in a budget line', () {
+      const budget = Budget(
+        id: 'budget',
+        name: 'Budget',
+        lines: [
+          BudgetLine(
+            id: 'line_household',
+            name: 'Household',
+            defaultOwnerIds: ['person_a'],
+            items: [inheritedItem],
+          ),
+        ],
+      );
+
+      expect(budget.isPersonAssignedToItem('person_a'), isTrue);
+    });
+
+    test('does not treat an unused line owner as an item assignment', () {
+      const budget = Budget(
+        id: 'budget',
+        name: 'Budget',
+        lines: [
+          BudgetLine(
+            id: 'line_household',
+            name: 'Household',
+            defaultOwnerIds: ['person_a'],
+          ),
+        ],
+      );
+
+      expect(budget.isPersonAssignedToItem('person_a'), isFalse);
+    });
+  });
+
   group('BudgetItemTimeline Normalization Tests', () {
     test('weekly normalizes accurately to monthly and annual', () {
       const weekly = BudgetItemTimeline.weekly;
@@ -54,7 +119,8 @@ void main() {
       expect(item.hasOwner('person_c', const []), isFalse);
     });
 
-    test('item in BudgetLine inherits default line owners if none specified', () {
+    test('item in BudgetLine inherits default line owners if none specified',
+        () {
       const item = BudgetItem(
         id: 'item_nested',
         name: 'Home Fiber Internet',
@@ -67,12 +133,14 @@ void main() {
       );
 
       final lineDefaults = ['person_a', 'person_b'];
-      expect(item.getEffectiveOwners(lineDefaults), equals(['person_a', 'person_b']));
+      expect(item.getEffectiveOwners(lineDefaults),
+          equals(['person_a', 'person_b']));
       expect(item.sharePerOwner(lineDefaults), equals(40.0));
       expect(item.hasOwner('person_a', lineDefaults), isTrue);
     });
 
-    test('item in BudgetLine overrides line default owners when explicitly set', () {
+    test('item in BudgetLine overrides line default owners when explicitly set',
+        () {
       const item = BudgetItem(
         id: 'item_personal',
         name: 'Alice Personal Gym',
