@@ -1,7 +1,22 @@
 param(
     [int]$Port = 8085,
-    [string]$Root = "c:\code\just_budget\preview"
+    [string]$Root
 )
+
+if ([string]::IsNullOrWhiteSpace($Root)) {
+    $Root = $PSScriptRoot
+}
+
+if (-not (Test-Path -LiteralPath $Root -PathType Container)) {
+    Write-Error "Preview root directory does not exist: $Root"
+    exit 1
+}
+
+$Root = (Resolve-Path -LiteralPath $Root).Path
+if (-not (Test-Path -LiteralPath (Join-Path $Root "index.html") -PathType Leaf)) {
+    Write-Error "Preview root does not contain index.html: $Root"
+    exit 1
+}
 
 $endpoint = New-Object System.Net.IPEndPoint([System.Net.IPAddress]::Loopback, $Port)
 $listener = New-Object System.Net.Sockets.TcpListener($endpoint)
@@ -44,7 +59,7 @@ while ($true) {
                     default { "application/octet-stream" }
                 }
 
-                $header = "HTTP/1.1 200 OK`r`nContent-Type: $mime`r`nContent-Length: $($bytes.Length)`r`nAccess-Control-Allow-Origin: *`r`nConnection: close`r`n`r`n"
+                $header = "HTTP/1.1 200 OK`r`nContent-Type: $mime`r`nContent-Length: $($bytes.Length)`r`nCache-Control: no-store`r`nAccess-Control-Allow-Origin: *`r`nConnection: close`r`n`r`n"
                 $headerBytes = [System.Text.Encoding]::UTF8.GetBytes($header)
                 $stream.Write($headerBytes, 0, $headerBytes.Length)
                 $stream.Write($bytes, 0, $bytes.Length)

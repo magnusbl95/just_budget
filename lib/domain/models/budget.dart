@@ -1,7 +1,6 @@
 import '../enums/budget_activity.dart';
 import 'budget_item.dart';
 import 'budget_line.dart';
-import 'person.dart';
 
 class PersonSummary {
   final String personId;
@@ -44,29 +43,36 @@ class Budget {
     return list;
   }
 
+  bool isPersonAssignedToItem(String personId) {
+    for (final item in directItems) {
+      if (item.hasOwner(personId, const [])) return true;
+    }
+    for (final line in lines) {
+      for (final item in line.items) {
+        if (item.hasOwner(personId, line.defaultOwnerIds)) return true;
+      }
+    }
+    return false;
+  }
+
   /// Total monthly income across all direct items and lines
-  double get totalMonthlyIncome =>
-      _sumActivity(BudgetActivity.income);
+  double get totalMonthlyIncome => _sumActivity(BudgetActivity.income);
 
   /// Total monthly living expenses across all direct items and lines
-  double get totalMonthlyExpense =>
-      _sumActivity(BudgetActivity.expense);
+  double get totalMonthlyExpense => _sumActivity(BudgetActivity.expense);
 
   /// Total monthly savings across all direct items and lines
-  double get totalMonthlySaving =>
-      _sumActivity(BudgetActivity.saving);
+  double get totalMonthlySaving => _sumActivity(BudgetActivity.saving);
 
   /// Total monthly investments across all direct items and lines
-  double get totalMonthlyInvesting =>
-      _sumActivity(BudgetActivity.investing);
+  double get totalMonthlyInvesting => _sumActivity(BudgetActivity.investing);
 
   /// Total combined monthly outflow (expense + saving + investing)
   double get totalMonthlyOutflow =>
       totalMonthlyExpense + totalMonthlySaving + totalMonthlyInvesting;
 
   /// Net running cashflow (income minus outflow)
-  double get netMonthlyCashflow =>
-      totalMonthlyIncome - totalMonthlyOutflow;
+  double get netMonthlyCashflow => totalMonthlyIncome - totalMonthlyOutflow;
 
   double _sumActivity(BudgetActivity activity) {
     double total = 0.0;

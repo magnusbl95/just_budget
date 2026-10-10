@@ -50,7 +50,9 @@ class SettingsScreen extends StatelessWidget {
               return ListTile(
                 dense: true,
                 title: Text(c['name']!),
-                trailing: isSelected ? const Icon(Icons.check_rounded, color: Colors.green) : null,
+                trailing: isSelected
+                    ? const Icon(Icons.check_rounded, color: Colors.green)
+                    : null,
                 onTap: () {
                   settingsViewModel.setCurrency(c['symbol']!, c['code']!);
                   Navigator.pop(ctx);
@@ -109,7 +111,8 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             children: [
               // Appearance Section
-              _buildSectionHeader('APPEARANCE (MATERIAL 3)', theme, colorScheme),
+              _buildSectionHeader(
+                  'APPEARANCE (MATERIAL 3)', theme, colorScheme),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -118,7 +121,8 @@ class SettingsScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Theme Mode',
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 10),
                       SegmentedButton<ThemePreference>(
@@ -151,12 +155,14 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Regional & Currency
-              _buildSectionHeader('CURRENCY & LOCALIZATION', theme, colorScheme),
+              _buildSectionHeader(
+                  'CURRENCY & LOCALIZATION', theme, colorScheme),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.attach_money_rounded),
                   title: const Text('Display Currency'),
-                  subtitle: Text('${settings.currencyCode} (${settings.currencySymbol})'),
+                  subtitle: Text(
+                      '${settings.currencyCode} (${settings.currencySymbol})'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showCurrencyDialog(context),
                 ),
@@ -178,7 +184,10 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (ctx) => ManagePeopleDialog(settingsViewModel: settingsViewModel),
+                      builder: (ctx) => ManagePeopleDialog(
+                        settingsViewModel: settingsViewModel,
+                        budgetViewModel: budgetViewModel,
+                      ),
                     );
                   },
                 ),
@@ -197,9 +206,12 @@ class SettingsScreen extends StatelessWidget {
               _buildSectionHeader('DATA & STORAGE', theme, colorScheme),
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.delete_forever_outlined, color: Colors.red),
-                  title: const Text('Reset All Data', style: TextStyle(color: Colors.red)),
-                  subtitle: const Text('Delete all budget lines and items to start fresh'),
+                  leading: const Icon(Icons.delete_forever_outlined,
+                      color: Colors.red),
+                  title: const Text('Reset All Data',
+                      style: TextStyle(color: Colors.red)),
+                  subtitle: const Text(
+                      'Delete all budget lines and items to start fresh'),
                   onTap: () => _confirmReset(context),
                 ),
               ),
@@ -234,7 +246,8 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title, ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildSectionHeader(
+      String title, ThemeData theme, ColorScheme colorScheme) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
       child: Text(

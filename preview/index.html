@@ -143,6 +143,10 @@
       background: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-on-primary-container);
     }
+    .btn-toggle:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
     /* Viewport Container (Adaptive: Mobile Phone vs Desktop Layout) */
     .app-viewport {
@@ -480,6 +484,22 @@
       font-size: 9px;
       font-weight: 800;
       color: #fff;
+    }
+    .person-color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .person-color-option {
+      width: 30px;
+      height: 30px;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .person-color-option.selected {
+      outline: 2px solid var(--md-sys-color-on-surface);
+      outline-offset: 2px;
     }
 
     /* Budget Line Card Header */
@@ -956,7 +976,7 @@
 
         <div class="form-group">
           <label class="form-label">Your Name</label>
-          <input type="text" class="m3-input" id="onboardName" value="Me">
+          <input type="text" class="m3-input" id="onboardName" placeholder="e.g. Alex">
         </div>
 
         <div class="form-group">
@@ -1089,6 +1109,28 @@
       </div>
     </div>
 
+    <!-- MODAL: Add/Edit Person -->
+    <div class="modal-overlay" id="personModal">
+      <div class="modal-card">
+        <div class="modal-title">
+          <span id="personModalTitle">Add Person</span>
+          <span class="material-symbols-rounded" style="cursor:pointer;" onclick="closeModal('personModal')">close</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="personNameInput">Person Name</label>
+          <input type="text" class="m3-input" id="personNameInput" placeholder="e.g. Alex, Sam">
+        </div>
+        <div class="form-group">
+          <span class="form-label">Color</span>
+          <div class="person-color-options" id="personColorOptions"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-text" onclick="closeModal('personModal')">Cancel</button>
+          <button class="btn-filled" onclick="savePerson()">Save Person</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -1138,6 +1180,11 @@
       activeTab: 'budget',
       isFirstLaunchCompleted: false
     };
+    const PERSON_COLORS = ['#006C4C', '#0277BD', '#C2185B', '#7B1FA2', '#E65100', '#00838F', '#4E342E', '#37474F'];
+
+    function personInitial(name) {
+      return (name || '').trim().slice(0, 1).toUpperCase() || '?';
+    }
 
     function loadState() {
       const saved = localStorage.getItem('just_budget_state');
@@ -1236,7 +1283,7 @@
     }
 
     function finishOnboarding(addStarters) {
-      const p1Name = document.getElementById('onboardName').value.trim() || 'Me';
+      const p1Name = document.getElementById('onboardName').value.trim() || 'Primary Person';
       const p2Name = document.getElementById('onboardPartner').value.trim();
 
       const p1 = { id: 'p_' + Date.now(), name: p1Name, color: '#006C4C' };
@@ -1400,7 +1447,7 @@
       state.people.forEach(p => {
         const chip = document.createElement('div');
         chip.className = 'm3-chip ' + (state.selectedPersonId === p.id ? 'active' : '');
-        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${personInitial(p.name)}</span> ${p.name}`;
         chip.onclick = () => {
           state.selectedPersonId = p.id;
           renderAll();
@@ -1491,7 +1538,7 @@
         const splitVal = norm / ownerObjects.length;
         ownerHtml = `
           <div class="owners-split-row">
-            ${ownerObjects.map(o => `<span class="avatar-circle" style="background:${o.color}">${o.name.slice(0,2).toUpperCase()}</span>`).join('')}
+            ${ownerObjects.map(o => `<span class="avatar-circle" style="background:${o.color}">${personInitial(o.name)}</span>`).join('')}
             <span>${ownerObjects.length > 1 ? `(${formatMoney(splitVal)}/mo each)` : ''} ${isInherited ? '• inherited' : ''}</span>
           </div>
         `;
@@ -1658,7 +1705,7 @@
         card.innerHTML = `
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <div style="display:flex;gap:8px;align-items:center;">
-              <span class="avatar-circle" style="background:${p.color};width:24px;height:24px;font-size:11px;">${p.name.slice(0,2).toUpperCase()}</span>
+              <span class="avatar-circle" style="background:${p.color};width:24px;height:24px;font-size:11px;">${personInitial(p.name)}</span>
               <span style="font-weight:800;font-size:15px;">${p.name}</span>
             </div>
             <span style="font-weight:800;color:${pNet >= 0 ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-error)'}">
@@ -1682,16 +1729,22 @@
       const list = document.getElementById('settingsPeopleList');
       list.innerHTML = '';
       state.people.forEach(p => {
+        const isAssigned = isPersonAssignedToItem(p.id);
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--md-sys-color-outline-variant);';
         row.innerHTML = `
           <div style="display:flex;align-items:center;gap:8px;">
-            <span class="avatar-circle" style="background:${p.color};width:22px;height:22px;">${p.name.slice(0,2).toUpperCase()}</span>
+            <span class="avatar-circle" style="background:${p.color};width:22px;height:22px;">${personInitial(p.name)}</span>
             <span style="font-weight:700;font-size:13px;">${p.name}</span>
           </div>
-          <button style="background:none;border:none;color:var(--md-sys-color-error);cursor:pointer;" onclick="deletePerson('${p.id}')">
-            <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
-          </button>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <button class="btn-toggle" aria-label="Edit ${p.name}" title="Edit person" onclick="openManagePeopleModal('${p.id}')">
+              <span class="material-symbols-rounded" style="font-size:18px;">edit</span>
+            </button>
+            <button class="btn-toggle" style="color:var(--md-sys-color-error);" aria-label="Delete ${p.name}" title="${isAssigned ? 'Cannot delete: assigned to budget items' : 'Delete person'}" ${isAssigned ? 'disabled' : ''} onclick="deletePerson('${p.id}')">
+              <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
+            </button>
+          </div>
         `;
         list.appendChild(row);
       });
@@ -1703,7 +1756,22 @@
       renderAll();
     }
 
+    function isPersonAssignedToItem(personId) {
+      return state.items.some(item => {
+        const parentLine = item.budgetLineId
+          ? state.lines.find(line => line.id === item.budgetLineId)
+          : null;
+        const owners = item.ownerIds && item.ownerIds.length
+          ? item.ownerIds
+          : (parentLine ? parentLine.defaultOwnerIds || [] : []);
+        return owners.includes(personId);
+      });
+    }
+
     function deletePerson(id) {
+      if (isPersonAssignedToItem(id)) return;
+      const person = state.people.find(p => p.id === id);
+      if (!person || !confirm(`Delete ${person.name}?`)) return;
       state.people = state.people.filter(p => p.id !== id);
       if (state.selectedPersonId === id) state.selectedPersonId = null;
       saveState();
@@ -1711,16 +1779,59 @@
       renderAll();
     }
 
-    function openManagePeopleModal() {
-      const name = prompt('Enter new person name:');
-      if (name && name.trim()) {
-        const colors = ['#006C4C', '#0277BD', '#C2185B', '#7B1FA2', '#E65100', '#00838F'];
-        const color = colors[state.people.length % colors.length];
-        state.people.push({ id: 'p_' + Date.now(), name: name.trim(), color: color });
-        saveState();
-        renderSettings();
-        renderAll();
+    let editingPersonId = null;
+    let selectedPersonColor = PERSON_COLORS[0];
+
+    function renderPersonColorOptions() {
+      const options = document.getElementById('personColorOptions');
+      options.innerHTML = '';
+      PERSON_COLORS.forEach(color => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'person-color-option' + (selectedPersonColor === color ? ' selected' : '');
+        button.style.backgroundColor = color;
+        button.setAttribute('aria-label', `Choose ${color}`);
+        button.setAttribute('aria-pressed', selectedPersonColor === color);
+        button.onclick = () => {
+          selectedPersonColor = color;
+          renderPersonColorOptions();
+        };
+        options.appendChild(button);
+      });
+    }
+
+    function openManagePeopleModal(personId = null) {
+      editingPersonId = personId;
+      const person = personId ? state.people.find(p => p.id === personId) : null;
+      document.getElementById('personModalTitle').textContent = person ? 'Edit Person' : 'Add Person';
+      document.getElementById('personNameInput').value = person ? person.name : '';
+      selectedPersonColor = person ? person.color : PERSON_COLORS[state.people.length % PERSON_COLORS.length];
+      renderPersonColorOptions();
+      document.getElementById('personModal').classList.add('active');
+      document.getElementById('personNameInput').focus();
+    }
+
+    function savePerson() {
+      const name = document.getElementById('personNameInput').value.trim();
+      if (!name) {
+        document.getElementById('personNameInput').focus();
+        return;
       }
+
+      if (editingPersonId) {
+        const person = state.people.find(p => p.id === editingPersonId);
+        if (person) {
+          person.name = name;
+          person.color = selectedPersonColor;
+        }
+      } else {
+        state.people.push({ id: 'p_' + Date.now(), name, color: selectedPersonColor });
+      }
+
+      closeModal('personModal');
+      saveState();
+      renderSettings();
+      renderAll();
     }
 
     function resetAllData() {
@@ -1817,7 +1928,7 @@
         const chip = document.createElement('div');
         const isSelected = selectedItemOwners.includes(p.id);
         chip.className = 'm3-chip ' + (isSelected ? 'active' : '');
-        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${personInitial(p.name)}</span> ${p.name}`;
         chip.onclick = () => {
           if (selectedItemOwners.includes(p.id)) {
             selectedItemOwners = selectedItemOwners.filter(id => id !== p.id);
@@ -1882,7 +1993,7 @@
       state.people.forEach(p => {
         const chip = document.createElement('div');
         chip.className = 'm3-chip';
-        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${p.name.slice(0,2).toUpperCase()}</span> ${p.name}`;
+        chip.innerHTML = `<span class="avatar-circle" style="background:${p.color}">${personInitial(p.name)}</span> ${p.name}`;
         chip.onclick = () => {
           chip.classList.toggle('active');
           if (selectedLineOwners.includes(p.id)) {

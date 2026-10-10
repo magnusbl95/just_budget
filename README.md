@@ -54,7 +54,10 @@ You can run and test the interactive preview directly in your browser:
 ```powershell
 powershell -ExecutionPolicy Bypass -File preview/serve.ps1 -Port 8085
 ```
-Then visit `http://localhost:8085/`.
+Then visit `http://localhost:8085/`. The server serves `preview` beside the
+script, so it works from a worktree or any other checkout. It reads the files
+on each request; reload the page to see saved changes. If port 8085 is already
+in use, stop the other server or choose a different port.
 
 ### 2. One-time setup (web on Android, desktop, and iPhone)
 The simplest first release is one hosted web app: open it in Chrome on Android
