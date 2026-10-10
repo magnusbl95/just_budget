@@ -86,9 +86,11 @@ firebase deploy --only firestore:rules --project YOUR_FIREBASE_PROJECT_ID
 
 The FlutterFire command creates the web app registration and generates
 `lib/firebase_options.dart`; no copying API keys or `--dart-define` arguments
-is needed. In the Firebase Console, enable **Email/Password** in
-**Authentication → Sign-in method** and create a database in **Firestore
-Database**.
+is needed. In the Firebase Console, enable **Email/Password** and **Google** in
+**Authentication → Sign-in method**, add your Firebase Hosting domain under
+**Authentication → Settings → Authorized domains**, and create a database in
+**Firestore Database**. Google sign-in uses a full-page redirect so it works
+in mobile browsers; users can choose Google or email/password in Settings.
 
 For local development, run in Chrome. To publish, build and deploy to Firebase
 Hosting:

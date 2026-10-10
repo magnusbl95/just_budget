@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/services/firebase_cloud_sync_service.dart';
@@ -154,6 +155,29 @@ class _FirebaseAccountSectionState extends State<FirebaseAccountSection> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      if (!kIsWeb) {
+        throw UnsupportedError(
+          'Google sign-in is currently configured for the web app.',
+        );
+      }
+      await widget.auth!.signInWithRedirect(GoogleAuthProvider());
+    } on FirebaseAuthException catch (error) {
+      if (mounted) setState(() => _error = error.message ?? error.code);
+    } on FirebaseException catch (error) {
+      if (mounted) setState(() => _error = error.message ?? error.code);
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _sendPasswordReset() async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
@@ -250,6 +274,23 @@ class _FirebaseAccountSectionState extends State<FirebaseAccountSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    OutlinedButton.icon(
+                      onPressed: _busy ? null : _signInWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata_rounded, size: 28),
+                      label: const Text('Continue with Google'),
+                    ),
+                    const SizedBox(height: 16),
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          child: Text('OR'),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
