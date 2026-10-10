@@ -10,6 +10,9 @@ class FirebaseAccountSection extends StatefulWidget {
   final FirebaseAuth? auth;
   final FirebaseCloudSyncService? cloudSync;
 
+  @visibleForTesting
+  static bool shouldShowAccountSummary(User? user) => user != null;
+
   const FirebaseAccountSection({
     super.key,
     required this.auth,
@@ -229,27 +232,29 @@ class _FirebaseAccountSectionState extends State<FirebaseAccountSection> {
     }
 
     final user = auth.currentUser;
+    final showAccountSummary = FirebaseAccountSection.shouldShowAccountSummary(user);
+    final currentUser = user;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (user != null) ...[
+            if (showAccountSummary && currentUser != null) ...[
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.account_circle_outlined),
-                title: const Text('Signed in'),
-                subtitle: Text(user.email ?? user.uid),
+                title: const Text('Logged in as'),
+                subtitle: Text(currentUser.email ?? currentUser.uid),
                 trailing: TextButton(
                   onPressed: _busy ? null : _signOut,
-                  child: const Text('Sign out'),
+                  child: const Text('Log out'),
                 ),
               ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
-                  onPressed: _busy ? null : () => _connect(user.uid),
+                  onPressed: _busy ? null : () => _connect(currentUser.uid),
                   icon: const Icon(Icons.sync_rounded),
                   label: const Text('Sync now'),
                 ),
@@ -341,7 +346,7 @@ class _FirebaseAccountSectionState extends State<FirebaseAccountSection> {
                             ? 'Please wait…'
                             : _createAccount
                                 ? 'Create account'
-                                : 'Sign in',
+                                : 'Log in',
                       ),
                     ),
                     if (!_createAccount)
@@ -358,7 +363,7 @@ class _FirebaseAccountSectionState extends State<FirebaseAccountSection> {
                               }),
                       child: Text(
                         _createAccount
-                            ? 'Already have an account? Sign in'
+                            ? 'Already have an account? Log in'
                             : 'New here? Create an account',
                       ),
                     ),
